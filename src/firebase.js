@@ -1,19 +1,96 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, createUserWithEmailAndPassword, updateProfile, updatePassword,sendEmailVerification,signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import toast from "react-hot-toast";
+import store from "./store";
+import { login as loginHandle, logout as logoutHandle } from "./store/auth";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyA_zW1OLPHXc47pu4gXW6LgyRzCNk8HeJ0",
-  authDomain: "todo-app-with-react-fire-c2095.firebaseapp.com",
-  projectId: "todo-app-with-react-fire-c2095",
-  storageBucket: "todo-app-with-react-fire-c2095.appspot.com",
-  messagingSenderId: "770265729938",
-  appId: "1:770265729938:web:71c89752c1f45c389d8f4b"
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_ID,
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth();
+
+export const register = (email, password) => {
+  try {
+    const { user } = createUserWithEmailAndPassword(auth, email, password);
+    return user;
+  }
+  catch (error) {
+    toast.error(error);
+  }
+};
+
+export const login = async (email, password) => {
+  try {
+    const { user } = await signInWithEmailAndPassword(auth, email, password)
+    return user;
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+export const logout = async () => {
+  try {
+    await signOut(auth);
+    return true
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+export const update = async data => {
+  try {
+    const user = auth.currentUser;
+    await updateProfile(user, data);
+    toast.success("Profile updated");
+    return user;
+  } catch (error) {
+    toast.error(error.message);
+  }
+}
+
+export const resetPassword = async password => {
+  try {
+    const user = auth.currentUser;
+    await updatePassword(user, password);
+    toast.success("Password updated");
+    return user;
+  } catch (error) {
+    toast.error(error.message);
+  }
+}
+
+
+export const emailVerification = async () => {
+  try {
+    await sendEmailVerification(auth.currentUser);
+    toast.success(`Email verification sent ${auth.currentUser.email} address.`);
+  } catch (error) {
+    toast.error(error.message);
+  }
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    store.dispatch(loginHandle({
+      displayName: user.displayName,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      uid: user.uid,
+      photoURL: user.photoURL
+    }));
+  } else {
+    store.dispatch(logoutHandle());
+  }
+});
+
+
 export const db = getFirestore(app);
