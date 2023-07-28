@@ -9,7 +9,10 @@ function App() {
     <div className={style.bg}>
       <div className={style.container}>
         <h3 className={style.heading}>Todo App</h3>
-        <form className={style.form}></form>
+        <form className={style.form}>
+          <input className={style.input} type="text" placeholder="Add a new task" />
+          <button className={style.button}></button>
+        </form>
       </div>
     </div>
   );
