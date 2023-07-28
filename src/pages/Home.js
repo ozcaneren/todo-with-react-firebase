@@ -37,9 +37,14 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <Link to="/register">Register</Link>
-      <Link to="/login">Login</Link>
+    <div className='max-w-md mx-auto grid grid-cols-2 gap-4 py-4'>
+      <button className='h-12 rounded px-4 text-xl text-white bg-indigo-500'>
+        <Link to="/register">Register</Link>
+      </button>
+      <button className='h-12 rounded px-4 text-xl text-white bg-indigo-500'>
+        <Link to="/login">Login</Link>
+      </button>
+
     </div>
   )
 }

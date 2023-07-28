@@ -12,6 +12,9 @@ import {
   addDoc,
   deleteDoc,
 } from "firebase/firestore";
+import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useNavigate} from "react-router-dom";
 
 
 const style = {
@@ -25,6 +28,10 @@ const style = {
 };
 
 function Todos() {
+
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState(""); // input for creating todo
@@ -70,12 +77,20 @@ function Todos() {
 
   // SYNC WITH FIREBASE
 
+  const handleHome = () => {
+    navigate("/", {
+      replace: true
+    });
+  }
 
   return (
     <div className={style.bg}>
       <div className={style.container}>
         <Toaster />
         <h3 className={style.heading}>Todo App</h3>
+        <button onClick={handleHome} className='h-8 rounded px-1 mb-4 text-sm text-white bg-indigo-500'>
+          <Link to="/">Home</Link>
+        </button>
         <form onSubmit={createTodo} className={style.form}>
           <input
             value={input}
