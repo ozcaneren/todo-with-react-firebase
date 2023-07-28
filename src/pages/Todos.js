@@ -48,7 +48,7 @@ function Todos() {
     setInput("");
   };
 
-  // Read todo from firebase
+  // Read todo from the firebase
   useEffect(() => {
     const q = query(collection(db, "todos"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
