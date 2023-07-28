@@ -13,7 +13,6 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useNavigate} from "react-router-dom";
 
 
@@ -31,7 +30,6 @@ function Todos() {
 
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState(""); // input for creating todo
