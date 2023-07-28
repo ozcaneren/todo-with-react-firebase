@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import Todo from './Todo';
 import {db} from './firebase';
-import { query, collection, onSnapshot, updateDoc, doc } from "firebase/firestore"; 
+import { query, collection, onSnapshot, updateDoc, doc, addDoc } from "firebase/firestore"; 
 
 const style = {
   bg: `h-screen w-screen p-4 bg-gradient-to-r from-[#2F80ED] to-[#1CB5E0]`,
@@ -16,8 +16,22 @@ const style = {
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState(''); // input for creating todo
+  // Create todo
+  const createTodo = async (e) => {
+    e.preventDefault(e);
+    if (input === '') {
+      alert('Please enter a valid todo');
+      return;
+    }
+    await addDoc(collection(db, "todos"), {
+      text: input,
+      completed: false,
+    });
+    setInput('');
+  };
 
-// Create todo
+
 // Read todo from firebase
   useEffect(() => {
     const q = query(collection(db, "todos"));
@@ -32,30 +46,21 @@ function App() {
   }, []);
 
 // Update todo from firebase
-const toggleComplete = async (todo) => {
-  await updateDoc(doc(db, "todos", todo.id), {
-    completed: !todo.completed
-  });
-};
-
-
+  const toggleComplete = async (todo) => {
+    await updateDoc(doc(db, "todos", todo.id), {
+      completed: !todo.completed
+    });
+  };
 
 // Delete todo
-
-
-
-
-
-
-
 
 
   return (
     <div className={style.bg}>
       <div className={style.container}>
         <h3 className={style.heading}>Todo App</h3>
-        <form className={style.form}>
-          <input className={style.input} type="text" placeholder="Add a new task" />
+        <form onSubmit={createTodo} className={style.form}>
+          <input value={input} onChange={(e) => setInput(e.target.value)} className={style.input} type="text" placeholder="Add a new task" />
           <button className={style.button}><AiOutlinePlus size={30}/></button>
         </form>
         <ul>
@@ -63,7 +68,8 @@ const toggleComplete = async (todo) => {
             <Todo key={index} todo={todo} toggleComplete={toggleComplete} />
           ))}
         </ul>
-        <p className={style.count}>You have 2 todos!</p>
+
+        {todos.length < 1 ? null : <p className={style.count}>{`You have ${todos.length} todos`}</p>}
       </div>
     </div>
   );
